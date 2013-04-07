@@ -6,10 +6,10 @@ setup(
  version = rndr.__version__,
  author = rndr.__author__,
  author_email = "alem@cidola.com",
- description = rndr.__desc__,
+ url=rndr.__home__,
+ description = rndr.__tag__,
  license = rndr.__licence__,
  keywords = "templates, templating, templating engine, render templates, eval",
- url = "http://packages.python.org/rndr",
  packages = ['rndr'],
  long_description = rndr.__doc__,
  classifiers = [

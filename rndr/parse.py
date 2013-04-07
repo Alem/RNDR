@@ -383,8 +383,17 @@ class Transcriber( Component ):
 
             if content:
                 printing_content = "%s( '''%s''' )" % (
-                        self.config.output_func_name, content, 
+                        self.config.output_func_name, content.replace("'","\\'"), 
                 )
+                # Single quotes (') found in the printing content are escaped
+                # twice; when written to virtual source they become
+                # single-escaped quotes and are consequently printed to
+                # standard output as regular unescaped quotes.  This prevents
+                # the accidental termination of the output function's
+                # longstring literal parameter ('''%s''') by a leading or
+                # ending single quote or a triple single quote template
+                # content.
+
 
                 content_end_pos = p.index + len( printing_content )
 

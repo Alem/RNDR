@@ -1,7 +1,10 @@
 __prog__    = "RNDR"
 __author__  = "Z. Alem"
-__licence__ = "MIT Licence"
+__licence__ = "MIT License"
 __version__ = "1.0.14"
+__home__    = "http://rndrengine.com",
+__repo__    = "http://github.com/Alem/RNDR"
+__pypi__    = "https://pypi.python.org/pypi/RNDR"
 __tag__     = "A simple and powerful templating engine."
 __desc__    = """
 RNDR is a simple templating engine that unleashes the
@@ -284,7 +287,7 @@ more likely be required at the point of the formatting.
 __desc_long__ = __usage__ + __config__
 __doc__ = __desc__ + __desc_long__
 
-DEVELOPER_MODE = True
+DEVELOPER_MODE = False
 
 from .core import RNDR, Coder
 from .base import Config
