@@ -1,8 +1,8 @@
 __prog__    = "RNDR"
 __author__  = "Z. Alem"
 __licence__ = "MIT License"
-__version__ = "1.0.14"
-__home__    = "http://rndrengine.com",
+__version__ = "1.0.1"
+__home__    = "http://rndrengine.com"
 __repo__    = "http://github.com/Alem/RNDR"
 __pypi__    = "https://pypi.python.org/pypi/RNDR"
 __tag__     = "A simple and powerful templating engine."

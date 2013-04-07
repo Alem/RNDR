@@ -6,7 +6,7 @@ setup(
  version = rndr.__version__,
  author = rndr.__author__,
  author_email = "alem@cidola.com",
- url=rndr.__home__,
+ url = rndr.__home__,
  description = rndr.__tag__,
  license = rndr.__licence__,
  keywords = "templates, templating, templating engine, render templates, eval",
