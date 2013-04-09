@@ -76,11 +76,11 @@ class ConsoleInterface( object ):
             # outside the doctest.
             # If ever that docttest stops creating this file, this operation
             # will fail. Also, if you are unfortunate enough to execute this
-            # in a directory with a file named 'test.xml', it will be 
+            # in a directory with a file named 'test.rndr.xml', it will be 
             # destroyed; a check for the existence of the file could be
             # performed, but who cares?
             import os
-            os.remove( 'test.xml' )
+            os.remove( 'test.rndr.xml' )
 
         if unittests:
             verbosity = 0

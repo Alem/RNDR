@@ -3,7 +3,7 @@ __author__  = "Z. Alem"
 __licence__ = "MIT License"
 __version__ = "1.0.1"
 __home__    = "http://rndrengine.com"
-__repo__    = "http://github.com/Alem/RNDR"
+__repo__    = "https://github.com/Alem/RNDR"
 __pypi__    = "https://pypi.python.org/pypi/RNDR"
 __tag__     = "A simple and powerful templating engine."
 __desc__    = """
@@ -124,14 +124,14 @@ Templates and Context
 RNDR accepts templates in the form of Python strings ( both bytestrings and
 unicode ), and file objects.
 
->>> f = open('test.xml','w')
+>>> f = open('test.rndr.xml','w')
 >>> r = f.write( 
 ... "<xml>"
 ... "@R= 1+1 R@"
 ... "</xml>" 
 ... )
 >>> f.close()
->>> r = RNDR( open('test.xml') )
+>>> r = RNDR( open('test.rndr.xml') )
 >>> r.render()
 '<xml>2</xml>'
 
@@ -155,6 +155,37 @@ These context variables may be of any type.
 ... )
 >>> r.render( {'my_func': lambda x: "Hello " + x } )
 '<xml>Hello Moe</xml>'
+
+
+Command-line interface
+----------------------
+
+RNDR also includes a very simple console interface for rendering template
+in a command-line environment.
+
+There are two positional arguments that may be passed. The first is the path of
+the template file and the second is the file to which rendered content will
+be written to.
+    
+    $ python -m rndr template.rndr.html rendered.html
+
+They default to the standard input and output streams respectively, meaining
+they can be used in pipes and standard stream redirections.
+
+    $ echo "@R if True: R@ Hello @R endfor R@" | python -m rndr
+    Hello
+
+    $ echo "@R for i in (1,2,3): R@ Hello @R endfor R@" | python -m rndr  > rendered.html
+
+One may also provide the context variables for a template by creating a
+file containing an evaluatable Python dictionary expression ( e.g.
+``{'context_var':123}`` ) or a JSON array (e.g. ``{ "context_var":123 }`` ) and providing
+its file path as the value for the ``-c`` or ``--context`` arguments.
+
+    python -m rndr template.rndr.html rendered.html -c context.py
+
+Finally, one may retrieve the version number by passing the ``-v`` 
+and ``--version`` arguments, or the help message via ``-h`` and ``--help``.
 """
 __config__="""
 Configuration
@@ -212,12 +243,12 @@ indentation of the virtual source built from the statements.
 
 This feature can be disabled. This will result in RNDR being unable to track the
 particular control structures active, and will require explicit block
-management through use of the colon symbol.
+management through use of the ``block_start_tag`` and ``block_end_tag``
+symbols.
 
 The start of a block is denoted by the block_start symbol, which is found at
 the end of a statement. The end of a block is denoted by the block_end symbol,
-which is found at the beginning of a statement. By default, both use the colon
-symbol.
+which is found at the beginning of a statement. By default, both use the colon (':').
 
 >>> rc = Config( cs_tracking = False )
 >>> r = RNDR( 
@@ -234,12 +265,11 @@ symbol.
 <html> Hello World! </html>
 
 This syntax is similar to that of the Templite+ templating engine.
-Taking advantage of the optional start tag and end tag values,
+Taking advantage of the configurable ``start_tag`` and ``end_tag`` values,
 RNDR can fully support a Templite+ template.
 
 >>> templite_config = Config( 
 ...     cs_tracking = False, start_tag = '<<', end_tag='>>', 
-...     output_tag_suffix = '-'
 ... )
 >>> r = RNDR( 
 ... "<html>"
