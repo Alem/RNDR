@@ -468,7 +468,7 @@ class CLITestCase( RNDRTestCase ):
     Tests functionality of command-line interface.
     """
     tpl_filename  = 'test.tpl'
-    ctxt_filename = 'test.ctxt'
+    ctxt_filename = 'test.py'
 
     def execute( self, template = '', context = '' ):
         args = []

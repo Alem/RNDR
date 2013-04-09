@@ -156,3 +156,9 @@ class RNDRConfigurationError( ValueError ):
     """
     Raised when RNDR has inappropriate or impossible configurations.
     """
+
+class InvalidArgumentValue( ValueError ):
+    """
+    Raised when a RNDR interface is provided an invalid
+    value for an argument or option.
+    """

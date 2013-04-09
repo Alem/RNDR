@@ -6,6 +6,7 @@ import doctest
 import unittest
 
 import rndr
+from .exceptions import InvalidArgumentValue
 
 class ConsoleInterface( object ):
 
@@ -98,20 +99,22 @@ class ConsoleInterface( object ):
         context_str = context_file.read()
         context_file.close()
 
-        # Tries JSON-decoding the file content, 
-        # if this fails it is presumed to be a Python dictionary 
-        # expression and evaluated.
-        #
-        # FIXME: Evaluating file content as a fall-back mechanism
-        # for failed JSON-decoding is a fundamentally flawed approach.
-        # User should specify whether context is JSON or Python.
-        try:
-            jd = json.JSONDecoder()
-            context = jd.decode( context_str )
-        except ValueError:
-            context = eval( context_str )
+        ext = context_file.name.split('.').pop()
+        if ext:
+            ext = ext.lower()
+            if ext == 'json':
+                jd = json.JSONDecoder()
+                return jd.decode( context_str )
+            elif ext == 'py':
+                return eval( context_str )
 
-        return context 
+        raise InvalidArgumentValue(
+            "The extension '%s' of the context file '%s'"
+            " is not recognized."
+            " The context file must contain either"
+            " Python or JSON, and declare so with its"
+            " extension." % (ext, context_file.name)
+        )
 
     def run( self, args = None, print_outut = True ):
         """
