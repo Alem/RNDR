@@ -12,39 +12,22 @@
 import os
 import rndr
 
-LOGO="""
-   LLLC                                                 CffL
- LLLCLf   LLffffLL  GGGG  GGGGG GGGGGGGG   ffLffffL     CLCCLL
- fL   fL  CfLLCCLfC @GGGG  GGGG @GG@GGGGG  LfLCCLfff    LC  CL
-LLG   LL   ff    LL   GGGG  GG  @G@   GGG  fL    LL   ff    L
-LC  CffL   ff    LC   GGGG  GG  GG     GG  LL    LL   LC  Lff
-LL CLfLC   LfLfLff    G GG  GG  GG     GG  LfLfLLLC   f  ffCf
-LL LC L    fLfLLL    GG@ GG GG  GG     GG  fffLLfC    f Cf  f
-ff fC fL   LL  Lff   GGG @GGGG  GG     GG  LLCCLLf    L Lf  LC
-fC fLfff   LL  CLf   GGG  @GGG  GG    @GG  Lf   CfL   L  LLLfL
-LL  LfLL  CLLC   fL CGGGG  GGG  GGGGGGGG@  fffL  ffLf LL  LLff
-CL       GfLfLf  CL LGGGG  @GG GGGGGGGG@  LLLLL   LfL LL 
- LL                                               CC Cf    C
- CLfLCfC                                              @ffCCLL
-   fLLLC                                                 CLffL
-"""
-
-
-
 ROOT = os.path.dirname(
             os.path.dirname(
                 os.path.abspath( __file__ ) 
        )
 ) + '/'
 
-DOCS_DIR = ROOT + 'docs/'
+DOCS_DIR     = ROOT + 'docs/'
 HOMEPAGE_DIR = ROOT + 'homepage/'
-TPL_DIR = ROOT + 'scripts/templates/'
+TPL_DIR      = ROOT + 'scripts/templates/'
 
-dr = rndr.RNDR( open( TPL_DIR + 'index.rndr.rst' ) )
-sr = rndr.RNDR( open( TPL_DIR + 'index.rndr.html' ) )
+gen_rndr = lambda name : rndr.RNDR( open( TPL_DIR + name  ) )
 
-docs = {
+dr = gen_rndr( 'index.rndr.rst'  )
+sr = gen_rndr( 'index.rndr.html' )
+
+output = {
         DOCS_DIR + 'usage.rst': rndr.__usage__[1:],
         DOCS_DIR + 'configuration.rst': rndr.__config__[1:],
         DOCS_DIR + 'index.rst': dr(),
@@ -52,10 +35,11 @@ docs = {
         ROOT + 'README.rst': rndr.__doc__
 }
 
-for i in docs:
+for i in output:
     with open( i , 'w' ) as f:
-        print "Creating: %s" % i
-        f.write( docs[i] )
+        print "Creating: %s." % i
+        f.write( output[i] )
         f.close()
 
+print "Building documentation."
 os.system( "cd %s; make html" % DOCS_DIR )

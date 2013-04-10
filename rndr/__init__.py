@@ -1,4 +1,5 @@
-__prog__    = "RNDR"
+__alias__   = "RNDR"
+__prog__    = "rndr"
 __author__  = "Z. Alem"
 __licence__ = "MIT License"
 __version__ = "1.0.1"
@@ -158,19 +159,19 @@ These context variables may be of any type.
 
 
 Command-line interface
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 RNDR also includes a very simple console interface for rendering template
 in a command-line environment.
 
 There are two positional arguments that may be passed. The first is the path of
 the template file and the second is the file to which rendered content will
-be written to.
+be written to. ::
     
     $ python -m rndr template.rndr.html rendered.html
 
 They default to the standard input and output streams respectively, meaining
-they can be used in pipes and standard stream redirections.
+they can be used in pipes and standard stream redirections. ::
 
     $ echo "@R if True: R@ Hello @R endfor R@" | python -m rndr
     Hello
@@ -180,13 +181,15 @@ they can be used in pipes and standard stream redirections.
 One may also provide the context variables for a template by creating a
 file containing an evaluatable Python dictionary expression ( e.g.
 ``{'context_var':123}`` ) or a JSON array (e.g. ``{ "context_var":123 }`` ) and providing
-its file path as the value for the ``-c`` or ``--context`` arguments.
+its file path as the value for the ``-c`` or ``--context`` arguments. ::
 
     python -m rndr template.rndr.html rendered.html -c context.py
 
 Finally, one may retrieve the version number by passing the ``-v`` 
 and ``--version`` arguments, or the help message via ``-h`` and ``--help``.
+
 """
+
 __config__="""
 Configuration
 -------------

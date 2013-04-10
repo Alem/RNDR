@@ -12,6 +12,6 @@ community. If you are interested in helping, you can do so in many ways:
     - Offering feature suggestions.
 
 To get started, simply pull and push branches with the `Github repository`_ as
-you please or send me an email at alem@alfoid.com.
+you please or send me an email at alem@cidola.com.
 
 .. _Github repository: https://github.com/alem/rndr

@@ -53,12 +53,12 @@ indentation of the virtual source built from the statements.
 
 This feature can be disabled. This will result in RNDR being unable to track the
 particular control structures active, and will require explicit block
-management through use of the colon symbol.
+management through use of the ``block_start_tag`` and ``block_end_tag``
+symbols.
 
 The start of a block is denoted by the block_start symbol, which is found at
 the end of a statement. The end of a block is denoted by the block_end symbol,
-which is found at the beginning of a statement. By default, both use the colon
-symbol.
+which is found at the beginning of a statement. By default, both use the colon (':').
 
 >>> rc = Config( cs_tracking = False )
 >>> r = RNDR( 
@@ -75,12 +75,11 @@ symbol.
 <html> Hello World! </html>
 
 This syntax is similar to that of the Templite+ templating engine.
-Taking advantage of the optional start tag and end tag values,
+Taking advantage of the configurable ``start_tag`` and ``end_tag`` values,
 RNDR can fully support a Templite+ template.
 
 >>> templite_config = Config( 
 ...     cs_tracking = False, start_tag = '<<', end_tag='>>', 
-...     output_tag_suffix = '-'
 ... )
 >>> r = RNDR( 
 ... "<html>"
