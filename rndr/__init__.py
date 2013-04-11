@@ -120,6 +120,9 @@ Ideally, complex or sensitive functionality should be contained in a domain
 removed from presentation; logic delegated to the template should be the
 simplest kind able to perform the given task.
 
+
+    
+
 Templates and Context
 ~~~~~~~~~~~~~~~~~~~~~
 RNDR accepts templates in the form of Python strings ( both bytestrings and
@@ -156,6 +159,57 @@ These context variables may be of any type.
 ... )
 >>> r.render( {'my_func': lambda x: "Hello " + x } )
 '<xml>Hello Moe</xml>'
+
+
+File and Template Inclusion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+RNDR also supports the inclusion of files and even other RNDR
+templates into a template.
+The content of a file inclusion statement takes the form
+``<include_tag_suffix> "filename" | filename_variable``.
+Where the ``include_tag_suffix`` is the tag leading the ``start_tag`` of a statement. By default, the ``include_tag_suffix`` is an opening
+angle bracket ('<'). 
+
+Templates included into other templates will share the same
+context variables.
+
+To give a complete illustration:
+
+>>> txt, template = open('test.txt') open('test.rndr.txt')
+>>> txt.write(
+... "Hello World. "
+... )
+>>> template.write(
+... "@R if name: R@"
+... "Hello @R= name R@."
+... "@R endif R@"
+... )
+>>> r = RNDR(
+... "<x>"
+... "@R< 'plain.txt' R@"
+... "@R< 'renderable.rndr.txt' R@"
+... "</x>"
+... )
+>>> print( r.render( context = {'name':'Moe'} ) )
+<x> Hello World. Hello Moe.</x>
+
+
+Django Integration
+~~~~~~~~~~~~~~~~~~
+
+Some users may want to integrate RNDR into 
+their Django projects. This can be done quite
+easily: simply insert the line ``rndr.django.Loader``
+into the TEMPLATE_LOADERS list in your projects settings.py
+file, and have it be the list's **only** element. ::
+
+   TEMPLATE_LOADERS = [
+        'rndr.django.Loader'
+   ]
+
+
+
 
 
 Command-line interface
