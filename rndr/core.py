@@ -194,6 +194,17 @@ class RNDR( Component ):
     'Hello world!'
     """
 
+    #: Holds the Coder instance.
+    coder = None
+
+    #: Holds the context variables
+    context = {}
+
+    def __init__( self, *args, **kwargs ):
+        super( RNDR, self ).__init__( *args, **kwargs )
+        self.context[ self.config.output_func_name ] = self.config.output_func
+        self.context[ '__self' ] = self
+
     def render( self, context = None, template = None ):
         """
         Renders the content, using any given context as the namespace for
@@ -209,40 +220,38 @@ class RNDR( Component ):
                 " provided."
             )
 
-        scope_globals = {}
 
         if context:
-            scope_globals.update( context )
+            self.context.update( context )
 
-        if scope_globals.get( self.config.output_func_name ):
-            raise exceptions.RNDRConfigurationError(
-                    "The context key '%s' is already mapped"
-                    " to the output function, as specified by the"
-                    " configuration object."
-                    % ( self.config.output_func_name) )
+            if context.get( self.config.output_func_name ):
+                raise exceptions.RNDRConfigurationError(
+                        "The context key '%s' is already mapped"
+                        " to the output function, as specified by the"
+                        " configuration object."
+                        % ( self.config.output_func_name) )
 
-        scope_globals[ self.config.output_func_name ] = self.config.output_func
 
         tr = Transcriber( template = self.template, config = self.config )
 
-        coder = Coder()
+        self.coder = Coder()
 
         # Transcribes statements from the template to the coder source 
         # and provides the mapping.
-        coder, line_mappings = tr.transcribe( coder )
+        self.coder, line_mappings = tr.transcribe( self.coder )
 
         try:
-            coder.compile()
+            self.coder.compile()
         except Exception as e:
             raise exceptions.RNDRCompiletimeError( 
-                    e, self.template, coder.source, line_mappings
+                    e, self.template, self.coder.source, line_mappings
             )
 
         try:
-            return coder.capture( scope_globals )
+            return self.coder.capture( self.context )
         except Exception as e:
             raise exceptions.RNDRRuntimeError( 
-                    e, self.template, coder.source, line_mappings
+                    e, self.template, self.coder.source, line_mappings
             )
 
     def render_with( self, **kwargs ):

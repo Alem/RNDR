@@ -109,6 +109,54 @@ class ContextInjectionTestCase( RNDRTestCase ):
 
         self.assertRendersAs( t, expect, {'obj': obj() } )
 
+class FileInclusionTestCase( RNDRTestCase ):
+    """
+    Tests functionality of include directive.
+    """
+
+    filename = "file.rndr.html"
+
+    def test_plain_inclusion( self ):
+        """
+        Tests inclusion of a plain text file.
+        """
+
+        with open( self.filename, 'w' ) as f:
+            f.write("Hello")
+
+        tpl = "@R< '%s' R@ World" % self.filename
+        
+        self.assertRendersAs( tpl, "Hello World" )
+
+    def test_renderable_inclusion( self ):
+        """
+        Tests inclusion of a RNDR template file.
+        """
+
+        with open( self.filename, 'w' ) as f:
+            f.write("@R if True:R@"
+                    "Hello"
+                    "@R endif R@")
+
+        tpl = "@R< '%s' R@ World" % self.filename
+        
+        self.assertRendersAs( tpl, "Hello World" )
+           
+
+    def test_renderable_inclusion_with_context( self ):
+        """
+        Tests inclusion of a RNDR template file with shared context.
+        """
+
+        with open( self.filename, 'w' ) as f:
+            f.write("@R if True:R@"
+                    "Bye @R= name R@"
+                    "@R endif R@")
+
+        tpl = "Hi @R= name R@. @R< '%s' R@" % self.filename
+        
+        self.assertRendersAs( tpl, "Hi Moe. Bye Moe", context = { 'name': 'Moe' } )
+        
 class MiscUseTestCase( RNDRTestCase ):
 
     def test_multiline_statements( self ):

@@ -52,6 +52,13 @@ class Config( object ):
     #: The name of the output function used within RNDR templates.
     output_func_name = "echo"
 
+    #: The suffix that when appending the start_tag, results in the named file
+    #: being included into the template and rendered.
+    #: e.g. Using default settings, 
+    #: ``@R< "filename.rndr.html" R@`` will include and render the contents of
+    #: filename.rndr.html
+    include_tag_suffix = '<'
+
     #: The suffix that when appending the start_tag, results in the enclosed 
     #: statement being passed as a parameter to the output function.
     #: e.g. Using default settings, 
@@ -89,7 +96,8 @@ class Config( object ):
         if not ( self.cs_tracking or kwargs.get('block_end_tag')):
             self.block_end_tag = ':'
 
-        for i in ('start_tag','end_tag','block_start_tag','block_end_tag'):
+        for i in ('start_tag','end_tag','block_start_tag','block_end_tag',
+                  'output_tag_suffix','include_tag_suffix'):
             setattr( self, i + '_len', len( getattr( self, i ) ) )
 
 class Configurable( object ):

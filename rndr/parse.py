@@ -268,7 +268,7 @@ class Transcriber( Component ):
 
             
     def format_statement( 
-            self, statement, starts_block, ends_block, output_short 
+            self, statement, starts_block, ends_block, output_short, include_directive
         ):
         """
         Formats a statement with respect to the statement flags.
@@ -290,8 +290,14 @@ class Transcriber( Component ):
         # '[OS] var' -> 'echo( var )'
         if output_short:
             statement = "%s(%s)" % (
-                    self.config.output_func_name, statement[1:]
+                    self.config.output_func_name, 
+                    statement[ self.config.output_tag_suffix_len : ]
             )
+        
+        # '[IT] "file.rndr.html"' --> RNDR( "file.rndr.html" ).render( globals() )
+        elif include_directive:
+            statement = ("echo( __self.render( template = open( %s ) )) " 
+                         % statement[ self.config.include_tag_suffix_len : ] )
 
         return statement
 
@@ -330,11 +336,15 @@ class Transcriber( Component ):
         """
         # Set the statement flags.
         starts_block, ends_block = self.get_block_states( statement )
+
         output_short = statement.find( 
                 self.config.output_tag_suffix ) is 0
 
+        include_directive = statement.find( 
+                self.config.include_tag_suffix ) is 0
+
         statement = self.format_statement(
-                statement, starts_block, ends_block, output_short 
+                statement, starts_block, ends_block, output_short, include_directive
         )
 
         # Write the statement.
