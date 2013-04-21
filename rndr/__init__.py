@@ -2,9 +2,9 @@ __alias__   = "RNDR"
 __prog__    = "rndr"
 __author__  = "Z. Alem"
 __licence__ = "MIT License"
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 __home__    = "http://rndrengine.com"
-__repo__    = "https://github.com/Alem/RNDR"
+__repo__    = "https://github.com/Alem/RNDR.git"
 __pypi__    = "https://pypi.python.org/pypi/RNDR"
 __tag__     = "A simple and powerful templating engine."
 __desc__    = """
@@ -164,27 +164,33 @@ These context variables may be of any type.
 File and Template Inclusion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RNDR also supports the inclusion of files and even other RNDR
-templates into a template.
-The content of a file inclusion statement takes the form
-``<include_tag_suffix> "filename" | filename_variable``.
-Where the ``include_tag_suffix`` is the tag leading the ``start_tag`` of a statement. By default, the ``include_tag_suffix`` is an opening
-angle bracket ('<'). 
+RNDR also supports the inclusion of files and other RNDR templates into a
+template.
+The content of a file inclusion statement takes the form: ::
+
+    <include_tag_suffix> "filename" | filename_variable
+
+The ``include_tag_suffix`` is the tag leading the ``start_tag`` of a
+statement. By default, the ``include_tag_suffix`` is an opening angle bracket
+('<').  ::
+
+    @R< "filename" R@
+    @R< filename_variable R@
 
 Templates included into other templates will share the same
 context variables.
 
-To give a complete illustration:
+To provide a complete illustration:
 
->>> txt, template = open('test.txt') open('test.rndr.txt')
->>> txt.write(
-... "Hello World. "
-... )
->>> template.write(
-... "@R if name: R@"
-... "Hello @R= name R@."
-... "@R endif R@"
-... )
+>>> with open('plain.txt','w') as plain, open('renderable.rndr.txt','w') as renderable:
+...     plain.write(
+...     " Hello World. "
+...     )
+...     renderable.write(
+...     "@R if name: R@"
+...     "Hello @R= name R@."
+...     "@R endif R@"
+...     )
 >>> r = RNDR(
 ... "<x>"
 ... "@R< 'plain.txt' R@"
@@ -198,18 +204,17 @@ To give a complete illustration:
 Django Integration
 ~~~~~~~~~~~~~~~~~~
 
-Some users may want to integrate RNDR into 
-their Django projects. This can be done quite
-easily: simply insert the line ``rndr.django.Loader``
-into the TEMPLATE_LOADERS list in your projects settings.py
-file, and have it be the list's **only** element. ::
+Some users may want to integrate RNDR into their Django projects. This can be
+done quite easily: simply insert the line ``"rndr.loaders.RNDRLoader"`` into the
+``TEMPLATE_LOADERS`` list in your projects settings.py file.
+Note that the RNDR template loader will **only** load templates that contain the 
+nested/secondary extension '.rndr' (e.g. template.rndr.html ). ::
 
-   TEMPLATE_LOADERS = [
-        'rndr.django.Loader'
-   ]
-
-
-
+   TEMPLATE_LOADERS = (
+     'rndr.loaders.FileSystemLoader',
+     'rndr.loaders.AppDirectoriesLoader',
+      ...
+   )
 
 
 Command-line interface

@@ -296,7 +296,7 @@ class Transcriber( Component ):
         
         # '[IT] "file.rndr.html"' --> RNDR( "file.rndr.html" ).render( globals() )
         elif include_directive:
-            statement = ("echo( __self.render( template = open( %s ) )) " 
+            statement = ("echo( __self.render( template = __self.config.template_loader( %s )  )) " 
                          % statement[ self.config.include_tag_suffix_len : ] )
 
         return statement

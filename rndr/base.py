@@ -59,6 +59,12 @@ class Config( object ):
     #: filename.rndr.html
     include_tag_suffix = '<'
 
+    #: The function that loads a template to be included given the filepath.
+    #:
+    #: The default implementation does nothing.
+    template_loader = lambda self,x : open( x )
+        
+
     #: The suffix that when appending the start_tag, results in the enclosed 
     #: statement being passed as a parameter to the output function.
     #: e.g. Using default settings, 

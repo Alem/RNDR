@@ -68,20 +68,17 @@ class ConsoleInterface( object ):
         """
         if doctests:
             doctest.testmod( rndr, verbose = verbose )
-            # This file is created by a doctest contained in
-            # the 'Templates and Context' section in the rndr.__usage__
-            # string.
-            # The doctests in this section serve more as user-targetted 
-            # illustrations than actual tests, so post-test clean-up 
-            # and other procedures specific to testing should be performed
-            # outside the doctest.
-            # If ever that docttest stops creating this file, this operation
-            # will fail. Also, if you are unfortunate enough to execute this
-            # in a directory with a file named 'test.rndr.xml', it will be 
-            # destroyed; a check for the existence of the file could be
-            # performed, but who cares?
+
             import os
-            os.remove( 'test.rndr.xml' )
+            for i in ('test.rndr.xml','plain.txt','renderable.rndr.txt'):
+            # These files are created by doctests  in the rndr.__usage__
+            # string. Doctests in this section serve more as user-targetted 
+            # illustrations than actual tests, so post-test clean-up 
+            # and other procedures specific to testing will be delegated
+            # to this method.
+            # If ever the docttests stop creating these files, this operation
+            # will fail. 
+                os.remove( i )
 
         if unittests:
             verbosity = 0
