@@ -19,7 +19,8 @@ class DjangoRNDR( RNDR ):
             for d in context.dicts:
                 context_dict.update( d )
 
-        self.config.template_loader = lambda x: get_template( x ).render()
+        # The default file loader must be replaced with a Django optimized version.
+        self.config.template_loader = lambda name: get_template( name ).render()
 
         return super( DjangoRNDR, self ).render( context_dict, *args, **kwargs )
         

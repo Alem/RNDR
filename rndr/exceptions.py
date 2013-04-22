@@ -35,14 +35,14 @@ class RNDRRenderingError( Exception ):
     fault_end_symbol = '<--'
 
     def fault_location( self ):
-        b = self.template[ 0:self.start ]
-        r = self.template[ self.end: ]
+        b = self.template.source[ 0:self.start ]
+        r = self.template.source[ self.end: ]
     
         up_to = lambda p,maxi=40: min( int(len(p)/2), maxi )
         b_s = up_to( b )
         r_s = up_to( r )
 
-        self.statement = self.template[ self.start:self.end ]
+        self.statement = self.template.source[ self.start:self.end ]
 
         line =  "%s %s %s %s %s" % ( 
                 b[b_s:], self.fault_start_symbol, self.statement,

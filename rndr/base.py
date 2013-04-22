@@ -1,5 +1,21 @@
 import sys
 from rndr import exceptions
+from os.path import dirname,join
+
+class Template( object ):
+    """
+    The Template class represents the original template file or string 
+    to be parsed and records two pieces of information: the source in string
+    form, and the template's relative path (if any).
+    """
+    #: The content of the template in string form.
+    source = ''
+
+    #: The path of the template file relative to the calling instance.
+    #: If the original template was a string, the path will be that of the 
+    #: calling instance.
+    path  =  ''
+        
 
 class TemplateHandling( object ):
     """
@@ -7,8 +23,8 @@ class TemplateHandling( object ):
     validation and loading of templates.
     """
 
-    #: Holds the source template in string form.
-    template = None
+    #: Holds the Template object.
+    template = Template()
 
     def load_template( self, template ):
         """
@@ -16,11 +32,14 @@ class TemplateHandling( object ):
         type-validation.
         """
         if isinstance( template, file ):
-            self.template = template.read()
+            self.template.path   = dirname( template.name )
+            self.template.source = template.read()
             template.close()
         elif isinstance( template, basestring ):
+            self.template.source = template
+        elif isinstance( template, Template ):
             self.template = template
-        else:
+        elif isinstance( template, basestring ):
             raise exceptions.RNDRConfigurationError(
                     "Expected a string or"
                      " file based template, received '%s'"
@@ -61,8 +80,9 @@ class Config( object ):
 
     #: The function that loads a template to be included given the filepath.
     #:
-    #: The default implementation does nothing.
-    template_loader = lambda self,x : open( x )
+    #: The default implementation simply opens the named file and appends
+    #: the file path it is relative to.
+    template_loader = lambda self,name,relpath = '' : open(join(relpath, name))
         
 
     #: The suffix that when appending the start_tag, results in the enclosed 
@@ -100,8 +120,7 @@ class Config( object ):
                 )
 
         if not ( self.cs_tracking or kwargs.get('block_end_tag')):
-            self.block_end_tag = ':'
-
+            self.block_end_tag = ':' 
         for i in ('start_tag','end_tag','block_start_tag','block_end_tag',
                   'output_tag_suffix','include_tag_suffix'):
             setattr( self, i + '_len', len( getattr( self, i ) ) )

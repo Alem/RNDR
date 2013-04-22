@@ -28,7 +28,7 @@ class Parser( Component ):
         Scans the template for any start tags that appear before an
         unterminated statement is terminated.
         """
-        extra_start = self.template.find( 
+        extra_start = self.template.source.find( 
                 self.config.start_tag, 
                 self.statement_start, self.statement_end 
         )
@@ -43,7 +43,7 @@ class Parser( Component ):
         """
         Returns the Python statement found between the start and end tags.
         """
-        return self.template[ self.statement_start : self.statement_end ]
+        return self.template.source[ self.statement_start : self.statement_end ]
 
 
     def seek_nonescaped( self, tag, offset ):
@@ -51,10 +51,10 @@ class Parser( Component ):
         Returns the position of the first non-escaped instance of a tag
         relative to the offset.
         """
-        pos = self.template.find( tag, offset )
+        pos = self.template.source.find( tag, offset )
 
-        while pos > 0 and self.template[ pos - 1 ] == self.escape_char:
-            pos = self.template.find( tag, pos + 1 )
+        while pos > 0 and self.template.source[ pos - 1 ] == self.escape_char:
+            pos = self.template.source.find( tag, pos + 1 )
 
         return pos
 
@@ -166,7 +166,7 @@ class Parser( Component ):
             # No statements tags found beyond index. Yield remainder.
             if self.start is -1:
                 yield (
-                        self.unescape( self.template[ self.index: ]),
+                        self.unescape( self.template.source[ self.index: ]),
                         ''
                 )
                 break
@@ -176,7 +176,7 @@ class Parser( Component ):
             self.check_missing_tag()
 
             content = self.unescape(
-                        self.template[ self.index:self.start ],
+                        self.template.source[ self.index:self.start ],
             )
 
             # Update the current position to be the end position of the
@@ -204,6 +204,10 @@ class Transcriber( Component ):
 
     #: Lists the control structures recognized by RNDR.
     cs = ['for','while','if','try','else','elif','finally','except']
+
+    # The numeric codes for suffix types.
+    OUTPUT_SHORT      = 1
+    INCLUDE_DIRECTIVE = 2
 
     def reset( self ):
         """
@@ -268,7 +272,7 @@ class Transcriber( Component ):
 
             
     def format_statement( 
-            self, statement, starts_block, ends_block, output_short, include_directive
+            self, statement, starts_block, ends_block, suffix_type
         ):
         """
         Formats a statement with respect to the statement flags.
@@ -288,16 +292,26 @@ class Transcriber( Component ):
                 statement = ''
         
         # '[OS] var' -> 'echo( var )'
-        if output_short:
+        if suffix_type is self.OUTPUT_SHORT:
             statement = "%s(%s)" % (
                     self.config.output_func_name, 
                     statement[ self.config.output_tag_suffix_len : ]
             )
         
-        # '[IT] "file.rndr.html"' --> RNDR( "file.rndr.html" ).render( globals() )
-        elif include_directive:
-            statement = ("echo( __self.render( template = __self.config.template_loader( %s )  )) " 
-                         % statement[ self.config.include_tag_suffix_len : ] )
+        # The next few lines are quite, however this most easily grants
+        # inclusion of files and templates within templates.
+        #
+        # '[IT] "file.rndr.html"' -->
+        #   RNDR( "file.rndr.html","path/of/cur/tpl" ).render( globals() )
+        elif suffix_type is self.INCLUDE_DIRECTIVE:
+            func_call = "echo( __self.render( template = __self.config.template_loader( %s ) ) )"
+
+            parameters = statement[ self.config.include_tag_suffix_len : ]
+
+            if self.template.path:
+                parameters += " ,'%s' " % self.template.path
+                
+            statement = func_call % parameters
 
         return statement
 
@@ -337,14 +351,14 @@ class Transcriber( Component ):
         # Set the statement flags.
         starts_block, ends_block = self.get_block_states( statement )
 
-        output_short = statement.find( 
-                self.config.output_tag_suffix ) is 0
-
-        include_directive = statement.find( 
-                self.config.include_tag_suffix ) is 0
+        suffix_type = 0
+        if statement[0] == self.config.output_tag_suffix:
+            suffix_type = self.OUTPUT_SHORT
+        elif statement[0] == self.config.include_tag_suffix:
+            suffix_type = self.INCLUDE_DIRECTIVE
 
         statement = self.format_statement(
-                statement, starts_block, ends_block, output_short, include_directive
+                statement, starts_block, ends_block, suffix_type = suffix_type
         )
 
         # Write the statement.
