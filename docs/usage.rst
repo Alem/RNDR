@@ -187,14 +187,16 @@ Django Integration
 ~~~~~~~~~~~~~~~~~~
 
 Some users may want to integrate RNDR into their Django projects. This can be
-done quite easily: simply insert the line ``"rndr.django.Loader"`` into the
+done quite easily: simply insert the line ``"rndr.loaders.RNDRLoader"`` into the
 ``TEMPLATE_LOADERS`` list in your projects settings.py file.
-Be warned, however, if any other loader comes before it and succesfully finds the
-template Django will use the templating engine associated with that loader instead. ::
+Note that the RNDR template loader will **only** load templates that contain the 
+nested/secondary extension '.rndr' (e.g. template.rndr.html ). ::
 
-   TEMPLATE_LOADERS = [
-        'rndr.django.Loader'
-   ]
+   TEMPLATE_LOADERS = (
+     'rndr.loaders.FileSystemLoader',
+     'rndr.loaders.AppDirectoriesLoader',
+      ...
+   )
 
 
 Command-line interface
