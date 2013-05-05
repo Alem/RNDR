@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#TODO: Add tests for the Django template loaders.
 #TODO: Document test methods.
 
 import sys
@@ -74,7 +75,7 @@ class ContextInjectionTestCase( RNDRTestCase ):
     Tests the functionality of context variables injected into templates.
     """
 
-    def test_variable(  self ):
+    def test_variable( self ):
         ct = (
             "@R if var: R@"
             "Hi"
@@ -114,17 +115,34 @@ class FileInclusionTestCase( RNDRTestCase ):
     Tests functionality of include directive.
     """
 
-    filename = "file.rndr.html"
+    file_path_1 = "file.rndr.html"
+    file_path_2 = "file2.rndr.html"
+    test_dir    = 'test_tpls/'
+
+
+    def setUp( self ):
+        super( FileInclusionTestCase, self ).setUp()
+
+        self.full_path_1 =  self.test_dir + self.file_path_1
+        self.full_path_2 =  self.test_dir + self.file_path_2
+
+        os.mkdir( self.test_dir )
+
+    def tearDown( self ):
+        super( FileInclusionTestCase, self ).tearDown()
+        for i in (self.full_path_1, self.full_path_2):
+            if os.path.exists( i ):
+                os.unlink( i )
+        os.rmdir( self.test_dir )
 
     def test_plain_inclusion( self ):
         """
         Tests inclusion of a plain text file.
         """
-
-        with open( self.filename, 'w' ) as f:
+        with open( self.full_path_1, 'w' ) as f:
             f.write("Hello")
 
-        tpl = "@R< '%s' R@ World" % self.filename
+        tpl = "@R< '%s' R@ World" % self.full_path_1
         
         self.assertRendersAs( tpl, "Hello World" )
 
@@ -133,12 +151,12 @@ class FileInclusionTestCase( RNDRTestCase ):
         Tests inclusion of a RNDR template file.
         """
 
-        with open( self.filename, 'w' ) as f:
+        with open( self.full_path_1, 'w' ) as f:
             f.write("@R if True:R@"
                     "Hello"
                     "@R endif R@")
 
-        tpl = "@R< '%s' R@ World" % self.filename
+        tpl = "@R< '%s' R@ World" % self.full_path_1
         
         self.assertRendersAs( tpl, "Hello World" )
            
@@ -148,14 +166,29 @@ class FileInclusionTestCase( RNDRTestCase ):
         Tests inclusion of a RNDR template file with shared context.
         """
 
-        with open( self.filename, 'w' ) as f:
+        with open( self.full_path_1, 'w' ) as f:
             f.write("@R if True:R@"
                     "Bye @R= name R@"
                     "@R endif R@")
 
-        tpl = "Hi @R= name R@. @R< '%s' R@" % self.filename
+        tpl = "Hi @R= name R@. @R< '%s' R@" % self.full_path_1
         
         self.assertRendersAs( tpl, "Hi Moe. Bye Moe", context = { 'name': 'Moe' } )
+
+    def test_inclusion_path_relativity( self ):
+        """
+        Tests file inclusion is relative to the template.
+        """
+        with open( self.full_path_1, 'w' ) as f:
+            f.write("@R if True:R@"
+                    "Bye @R= name R@"
+                    "@R endif R@")
+
+        with open( self.full_path_2, 'w' ) as f:
+            f.write("Hi @R= name R@. @R< '%s' R@" % self.file_path_1 )
+
+        with open( self.full_path_2, 'r' ) as f:
+            self.assertRendersAs( f, "Hi Moe. Bye Moe", context = { 'name': 'Moe' } )
         
 class MiscUseTestCase( RNDRTestCase ):
 

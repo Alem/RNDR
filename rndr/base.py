@@ -24,13 +24,14 @@ class TemplateHandling( object ):
     """
 
     #: Holds the Template object.
-    template = Template()
+    template = None
 
     def load_template( self, template ):
         """
         Stores the template string or file content upon successful
         type-validation.
         """
+        self.template = Template()
         if isinstance( template, file ):
             self.template.path   = dirname( template.name )
             self.template.source = template.read()
