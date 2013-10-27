@@ -40,8 +40,6 @@ class ConsoleInterface( object ):
                 action='store_true', help ="Execute the entire test suite." )
             parser.add_argument("--verbose",  dest ='verbose',
                 action='store_true', help ="Relentlessly vomit text whilst doing so." )
-            parser.add_argument("-g","--graphical",  dest ='graphical',
-                action='store_true', help ="Launch a half-assed GUI.")
 
         return parser
 
@@ -146,43 +144,3 @@ class ConsoleInterface( object ):
             print( output )
 
         return output
-
-import wx
-class Window(wx.Frame):
-    # Develop this or delete it.
-
-    panel = None
-    button = None
-    result  = None
-
-    sizer = None
-
-    def __init__(self, *args, **kwargs):
-        wx.Frame.__init__(self, *args, **kwargs)
-
-        self.Title = "RNDR Template Renderer"
-        self.panel = wx.Panel(self)
-        self.button = wx.Button(
-            self.panel, label="Render"
-        )
-        self.command = wx.TextCtrl(
-            self.panel, style=wx.TE_MULTILINE
-        )
-        self.result = wx.TextCtrl(
-            self.panel, style=wx.TE_MULTILINE
-        )
-
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.command, 1, wx.EXPAND)
-        self.sizer.Add(self.button, 0, wx.EXPAND)
-        self.sizer.Add(self.result, 1, wx.EXPAND)
-
-        self.command.SetValue("dir")
-        self.button.Bind(wx.EVT_BUTTON, self.CallCommand)
-
-        self.panel.SetSizerAndFit(self.sizer)  
-        self.Show()
-
-    def CallCommand(self, e):
-        p = rndr.RNDR(self.command.GetValue())()
-        self.result.SetValue( p )
