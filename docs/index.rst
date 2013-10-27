@@ -26,7 +26,7 @@ User Guide
    modules
    contributing
 
-:Version: 1.1.3
+:Version: 1.1.5
 
 Indices and tables
 ------------------
