@@ -20,10 +20,14 @@ class ConsoleInterface( object ):
                 help="The template file marked-up with RNDR statements."
                      " Defaults to Stdin when no value is provided.")
 
-        parser.add_argument('-c','--context', type=argparse.FileType('r'),
+        parser.add_argument('-c','--context', type=str,
+                help="The string containing RNDR context variables in the form of a Python dictionary expression.",
+                        metavar="<context>", dest="context" )
+
+        parser.add_argument('-r','--context-file', type=argparse.FileType('r'),
                 help="The file containing RNDR context variables in the"
                      " form of a Python dictionary expression or a JSON array.",
-                        metavar="<context file>", dest="context" )
+                        metavar="<context file>", dest="context_file" )
                              
 
         parser.add_argument('output', nargs='?', 
@@ -136,7 +140,10 @@ class ConsoleInterface( object ):
         context = {}
 
         if namespace.context:
-            context = self.get_context( namespace.context )
+            context = eval(namespace.context)
+        elif namespace.context_file:
+            context = self.get_context( namespace.context_file )
+
 
         output = r.render( context = context )
 
